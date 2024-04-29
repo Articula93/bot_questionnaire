@@ -26,7 +26,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    await update.message.reply_text("Нажмите сюда:", reply_markup=reply_markup)
+    await update.message.reply_text(CLICK_HERE, reply_markup=reply_markup)
     return START
 
 async def start_quize(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -34,8 +34,8 @@ async def start_quize(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     await query.answer()
     keyboard = [
         [
-            InlineKeyboardButton("Мужской", callback_data="Мужской"),
-            InlineKeyboardButton("Женский", callback_data="Женский"),
+            InlineKeyboardButton(MALE, callback_data=MALE),
+            InlineKeyboardButton(FEMALE, callback_data=FEMALE),
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -46,66 +46,66 @@ async def gender(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
     await query.answer()
 
-    context.user_data["Пол"]=query.data
+    context.user_data[YOUR_GENDER]=query.data
     await context.bot.send_message(update.effective_user.id, STATE_YOUR_AGE)
     return AGE
 
 async def age(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     txt = update.message.text
     if not txt.isdigit():
-        await update.message.reply_text("Укажите только число")
+        await update.message.reply_text(ONLY_COUNT)
         return AGE
-    context.user_data["Возраст"]=txt
+    context.user_data[YOUR_AGE]=txt
     await update.message.reply_text(STATE_YOUR_NAME)
     return NAME
 
 async def name_client(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     letter = update.message.text
     if not letter.isalpha():
-        await update.message.reply_text("Укажите пожалуйста ваше имя правильно")
+        await update.message.reply_text(CORRECT_NAME)
         return NAME
-    context.user_data["Имя"]=letter
+    context.user_data[YOUR_NAME]=letter
     await update.message.reply_text(ENTER_YOUR_CITY_OF_RESIDENCE)
     return CITY
 
 async def name_city(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     ltr = update.message.text
     if not ltr.isalpha():
-        await update.message.reply_text("Укажите пожалуйста ваш город правильно")
+        await update.message.reply_text(CORRECT_CITY)
         return CITY
-    context.user_data["Город"]=ltr
+    context.user_data[YOUR_CITY]=ltr
     await update.message.reply_text(INDICATE_YOUR_TRAINING_EXEPIRENCE)
     return TRAINING
 
 async def expirience(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     exp = update.message.text
-    context.user_data["Тренировочный стаж"]=exp
+    context.user_data[YOUR_EXEPIRENCE]=exp
     await update.message.reply_text(STATE_PURPOSE_CLASS)
     return TARGET
 
 async def goal(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     trg = update.message.text
-    context.user_data["Цель занятий"]=trg
+    context.user_data[YOUR_PURPOSE]=trg
     await update.message.reply_text(ENTER_YOUR_NUMBER_PHONE)
     return PHONE
 
 async def phone(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     number_phone = update.message.text
-    context.user_data["Номер телефона"]=number_phone
+    context.user_data[YOUR_PHONE]=number_phone
     await update.message.reply_text(CONVENIENT_TIME)
     return TIME
 
 async def talk_time(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     tt = update.message.text
-    context.user_data["Удобное время"]=tt
+    context.user_data[YOUR_CONVENIENT_TIME]=tt
     result = ""
     for key in context.user_data:
         result += f"{key}: {context.user_data[key]}\n"
     
     keyboard = [
         [
-            InlineKeyboardButton("Отправить данные", callback_data=str("Отправить данные")),
-            InlineKeyboardButton("Пройти анкету заново", callback_data=str("Пройти анкету заново")),
+            InlineKeyboardButton(SEND_DATA, callback_data=str(SEND_DATA)),
+            InlineKeyboardButton(REAPPLY, callback_data=str(REAPPLY)),
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -116,43 +116,43 @@ async def confirmation(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     query = update.callback_query
     await query.answer()
     data = query.data
-    if data == "Пройти анкету заново":
+    if data == REAPPLY:
         keyboard = [
             [
                 InlineKeyboardButton(FILL_IN_THE_FORM, callback_data=FILL_IN_THE_FORM)
             ]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.edit_message_text("Нажмите сюда:", reply_markup=reply_markup)
+        await query.edit_message_text(CLICK_HERE, reply_markup=reply_markup)
         return START
     else:
         session = Session()
         data = Data()
         data.user_id = update.effective_user.id
         data.data_time = datetime.now()
-        data.gender = context.user_data['Пол']
-        data.age = int(context.user_data['Возраст'])
-        data.name = context.user_data['Имя']
-        data.city = context.user_data['Город']
-        data.experience = context.user_data['Тренировочный стаж']
-        data.target = context.user_data['Цель занятий']
-        data.phone = context.user_data['Номер телефона']
-        data.time_talk = context.user_data['Удобное время']
+        data.gender = context.user_data[YOUR_GENDER]
+        data.age = int(context.user_data[YOUR_AGE])
+        data.name = context.user_data[YOUR_NAME]
+        data.city = context.user_data[YOUR_CITY]
+        data.experience = context.user_data[YOUR_EXEPIRENCE]
+        data.target = context.user_data[YOUR_PURPOSE]
+        data.phone = context.user_data[YOUR_PHONE]
+        data.time_talk = context.user_data[YOUR_CONVENIENT_TIME]
         data.nickname = update.effective_user.username
         data.posted = 0
         session.add(data)
         session.commit()
         session.close()
-        await query.edit_message_text("Ваши данные сохранены и отправлены.")
+        await query.edit_message_text(SAVE_DATA)
         text =  f"""
-        Пол: {context.user_data['Пол']}
-        Возраст: {int(context.user_data['Возраст'])}
-        Имя: {context.user_data['Имя']}
-        Город: {context.user_data['Город']}
-        Тренировочный стаж: {context.user_data['Тренировочный стаж']}
-        Цель занятий: {context.user_data['Цель занятий']}
-        Номер телефона: {context.user_data['Номер телефона']}
-        Удобное время: {context.user_data['Удобное время']}
+        Пол: {context.user_data[YOUR_GENDER]}
+        Возраст: {int(context.user_data[YOUR_AGE])}
+        Имя: {context.user_data[YOUR_NAME]}
+        Город: {context.user_data[YOUR_CITY]}
+        Тренировочный стаж: {context.user_data[YOUR_EXEPIRENCE]}
+        Цель занятий: {context.user_data[YOUR_PURPOSE]}
+        Номер телефона: {context.user_data[YOUR_PHONE]}
+        Удобное время: {context.user_data[YOUR_CONVENIENT_TIME]}
         Телеграм_ник @{update.effective_user.username}
         ID пользователя {update.effective_user.id}"""
 
