@@ -7,6 +7,7 @@ from telegram.ext import ConversationHandler
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 import re
 from main_db_model import*
+from constant_list import*
 from stages import*
 import os
 
@@ -19,7 +20,7 @@ ID_GROUP = os.environ.get('ID_group_bot_questionnaire')
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     keyboard = [
         [
-            InlineKeyboardButton("Заполнить анкету", callback_data="Заполнить анкету")
+            InlineKeyboardButton(FILL_IN_THE_FORM, callback_data=FILL_IN_THE_FORM)
         ]
     ]
 
@@ -38,7 +39,7 @@ async def start_quize(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await query.edit_message_text(text=f"Укажите пол", reply_markup=reply_markup)
+    await query.edit_message_text(text=IDENTIFY_GENDER, reply_markup=reply_markup)
     return GENDER
 
 async def gender(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -46,7 +47,7 @@ async def gender(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await query.answer()
 
     context.user_data["Пол"]=query.data
-    await context.bot.send_message(update.effective_user.id, "Укажите ваш возраст")
+    await context.bot.send_message(update.effective_user.id, STATE_YOUR_AGE)
     return AGE
 
 async def age(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -55,7 +56,7 @@ async def age(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         await update.message.reply_text("Укажите только число")
         return AGE
     context.user_data["Возраст"]=txt
-    await update.message.reply_text(f"Укажите ваше имя:")
+    await update.message.reply_text(STATE_YOUR_NAME)
     return NAME
 
 async def name_client(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -64,7 +65,7 @@ async def name_client(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         await update.message.reply_text("Укажите пожалуйста ваше имя правильно")
         return NAME
     context.user_data["Имя"]=letter
-    await update.message.reply_text(f"Укажите ваш город проживания:")
+    await update.message.reply_text(ENTER_YOUR_CITY_OF_RESIDENCE)
     return CITY
 
 async def name_city(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -73,25 +74,25 @@ async def name_city(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text("Укажите пожалуйста ваш город правильно")
         return CITY
     context.user_data["Город"]=ltr
-    await update.message.reply_text(f"Укажите ваш тренировочный стаж:")
+    await update.message.reply_text(INDICATE_YOUR_TRAINING_EXEPIRENCE)
     return TRAINING
 
 async def expirience(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     exp = update.message.text
     context.user_data["Тренировочный стаж"]=exp
-    await update.message.reply_text(f"Укажите цель занятий")
+    await update.message.reply_text(STATE_PURPOSE_CLASS)
     return TARGET
 
 async def goal(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     trg = update.message.text
     context.user_data["Цель занятий"]=trg
-    await update.message.reply_text(f"Укажите ваш номер телефона:")
+    await update.message.reply_text(ENTER_YOUR_NUMBER_PHONE)
     return PHONE
 
 async def phone(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     number_phone = update.message.text
     context.user_data["Номер телефона"]=number_phone
-    await update.message.reply_text(f"Укажите время когда вам удобно чтобы с вами связался тренер:")
+    await update.message.reply_text(CONVENIENT_TIME)
     return TIME
 
 async def talk_time(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -118,7 +119,7 @@ async def confirmation(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     if data == "Пройти анкету заново":
         keyboard = [
             [
-                InlineKeyboardButton("Заполнить анкету", callback_data="Заполнить анкету")
+                InlineKeyboardButton(FILL_IN_THE_FORM, callback_data=FILL_IN_THE_FORM)
             ]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
@@ -162,9 +163,9 @@ async def confirmation(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 async def admin(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if 805170240 == update.message.from_user.id:
-        await update.message.reply_text(f"Пользователь является администратором")
+        await update.message.reply_text(USER_ADMIN)
     else:
-        await update.message.reply_text(f"Пользователь не является администратором")
+        await update.message.reply_text(USER_NOT_ADMIN)
 
 async def show_data(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     Session = sessionmaker(bind=engine)
@@ -173,7 +174,7 @@ async def show_data(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
    
     result = ""
     if update.message.from_user.id != 805170240 and update.message.from_user.id != 496750666:
-        await update.message.reply_text(f"Вы не являетесь администратором канала чтобы использовать эту команду")
+        await update.message.reply_text(YOUR_NOT_ADMIN)
         return
     for msg_1 in list(data_client):
         result = f"""Имя: {msg_1.name}
@@ -199,7 +200,7 @@ async def history(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
    
     result = ""
     if update.message.from_user.id != 805170240 and update.message.from_user.id != 496750666:
-        await update.message.reply_text(f"Вы не являетесь администратором канала чтобы использовать эту команду")
+        await update.message.reply_text(YOUR_NOT_ADMIN)
         return
     for msg_1 in list(data_client):
         if msg_1.posted == 1:
