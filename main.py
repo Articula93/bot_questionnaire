@@ -145,16 +145,16 @@ async def confirmation(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         session.close()
         await query.edit_message_text(SAVE_DATA)
         text =  f"""
-        Пол: {context.user_data[YOUR_GENDER]}
-        Возраст: {int(context.user_data[YOUR_AGE])}
-        Имя: {context.user_data[YOUR_NAME]}
-        Город: {context.user_data[YOUR_CITY]}
-        Тренировочный стаж: {context.user_data[YOUR_EXEPIRENCE]}
-        Цель занятий: {context.user_data[YOUR_PURPOSE]}
-        Номер телефона: {context.user_data[YOUR_PHONE]}
-        Удобное время: {context.user_data[YOUR_CONVENIENT_TIME]}
-        Телеграм_ник @{update.effective_user.username}
-        ID пользователя {update.effective_user.id}"""
+        {FORM_GENDER} {context.user_data[YOUR_GENDER]}
+        {FORM_AGE} {int(context.user_data[YOUR_AGE])}
+        {FORM_NAME} {context.user_data[YOUR_NAME]}
+        {FORM_CITY} {context.user_data[YOUR_CITY]}
+        {FORM_EXEPIRENCE} {context.user_data[YOUR_EXEPIRENCE]}
+        {FORM_PURPOSE} {context.user_data[YOUR_PURPOSE]}
+        {FORM_PHONE} {context.user_data[YOUR_PHONE]}
+        {FORM_TIME} {context.user_data[YOUR_CONVENIENT_TIME]}
+        {TELEGRAM_NAME} {f'@',update.effective_user.username}
+        {ID_USER} {update.effective_user.id}"""
 
         await context.bot.send_message(ID_GROUP,text)
 
@@ -177,18 +177,18 @@ async def show_data(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text(YOUR_NOT_ADMIN)
         return
     for msg_1 in list(data_client):
-        result = f"""Имя: {msg_1.name}
-        Пол: {msg_1.gender}
-        Возраст: {msg_1.age}
-        Город: {msg_1.city}
-        Опыт: {msg_1.experience}
-        Цель занятий: {msg_1.target}
-        Номер телефона: {msg_1.time_talk}
-        Время звонка: {msg_1.time_talk}
-        Телеграм_ник @{msg_1.nickname}
-        ID пользователя {update.effective_user.id}"""
+        result = f"""{FORM_NAME} {msg_1.name}
+        {FORM_GENDER} {msg_1.gender}
+        {FORM_AGE} {msg_1.age}
+        {FORM_CITY} {msg_1.city}
+        {FORM_EXEPIRENCE} {msg_1.experience}
+        {FORM_PURPOSE} {msg_1.target}
+        {FORM_PHONE} {msg_1.time_talk}
+        {FORM_TIME} {msg_1.time_talk}
+        {TELEGRAM_NAME} {f'@',msg_1.nickname}
+        {ID_USER} {update.effective_user.id}"""
 
-        await update.message.reply_text(f'Данные о клиенте: \n{result}\n')
+        await update.message.reply_text(CLIENT_DATA, f'\n{result}\n')
         msg_1.posted = 1
         session.commit()
     session.close()
@@ -204,32 +204,32 @@ async def history(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
     for msg_1 in list(data_client):
         if msg_1.posted == 1:
-            result = f"""Старая анкета:\n Имя: {msg_1.name}
-            Пол: {msg_1.gender}
-            Возраст: {msg_1.age}
-            Город: {msg_1.city}
-            Опыт: {msg_1.experience}
-            Цель занятий: {msg_1.target}
-            Номер телефона: {msg_1.phone}
-            Время звонка: {msg_1.time_talk}
-            Телеграм_ник @{msg_1.nickname}
-            ID пользователя {update.effective_user.id}"""
+            result = f"""{OLD_FORM}\n {FORM_NAME} {msg_1.name}
+            {FORM_GENDER} {msg_1.gender}
+            {FORM_AGE} {msg_1.age}
+            {FORM_CITY} {msg_1.city}
+            {FORM_EXEPIRENCE} {msg_1.experience}
+            {FORM_PURPOSE} {msg_1.target}
+            {FORM_PHONE} {msg_1.phone}
+            {FORM_TIME} {msg_1.time_talk}
+            {TELEGRAM_NAME} {f'@',msg_1.nickname}
+            {ID_USER} {update.effective_user.id}"""
 
-            await update.message.reply_text(f'Данные о клиенте: \n{result}\n')
+            await update.message.reply_text(CLIENT_DATA,f'\n{result}\n')
             msg_1.posted = 1
         else:
-            result = f"""Новая анкета:\n Имя: {msg_1.name}
-            Пол: {msg_1.gender}
-            Возраст: {msg_1.age}
-            Город: {msg_1.city}
-            Опыт: {msg_1.experience}
-            Цель занятий: {msg_1.target}
-            Номер телефона: {msg_1.phone}
-            Время звонка: {msg_1.time_talk}
-            Телеграм_ник @{msg_1.nickname}
-            ID пользователя {update.effective_user.id}"""
+            result = f"""{NEW_FORM}\n {FORM_NAME} {msg_1.name}
+            {FORM_GENDER} {msg_1.gender}
+            {FORM_AGE}: {msg_1.age}
+            {FORM_CITY} {msg_1.city}
+            {FORM_EXEPIRENCE} {msg_1.experience}
+            {FORM_PURPOSE} {msg_1.target}
+            {FORM_PHONE} {msg_1.phone}
+            {FORM_TIME} {msg_1.time_talk}
+            {TELEGRAM_NAME} {f'@',msg_1.nickname}
+            {ID_USER} {update.effective_user.id}"""
 
-            await update.message.reply_text(f'Данные о клиенте: \n{result}\n')
+            await update.message.reply_text(CLIENT_DATA,f'\n{result}\n')
             
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
