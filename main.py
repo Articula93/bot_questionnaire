@@ -8,8 +8,13 @@ from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandl
 import re
 from main_db_model import*
 from stages import*
+import os
 
-TOKEN = ""
+TOKEN = os.environ.get('Token_bot_questionnaire')
+print(TOKEN, 'Token_bot_questionnaire')
+
+
+ID_GROUP = os.environ.get('ID_group_bot_questionnaire')
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     keyboard = [
@@ -150,7 +155,7 @@ async def confirmation(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         Телеграм_ник @{update.effective_user.username}
         ID пользователя {update.effective_user.id}"""
 
-        await context.bot.send_message(-1001851695961,text)
+        await context.bot.send_message(ID_GROUP,text)
 
         return END
     
