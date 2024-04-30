@@ -9,6 +9,7 @@ import re
 from main_db_model import*
 from constant_list import*
 from stages import*
+from func_data_client import*
 import os
 
 TOKEN = os.environ.get('Token_bot_questionnaire')
@@ -187,7 +188,7 @@ async def show_data(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         {FORM_TIME} {msg_1.time_talk}
         {TELEGRAM_NAME} {f'@',msg_1.nickname}
         {ID_USER} {update.effective_user.id}"""
-
+ 
         await update.message.reply_text(CLIENT_DATA, f'\n{result}\n')
         msg_1.posted = 1
         session.commit()
@@ -204,31 +205,13 @@ async def history(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
     for msg_1 in list(data_client):
         if msg_1.posted == 1:
-            result = f"""{OLD_FORM}\n {FORM_NAME} {msg_1.name}
-            {FORM_GENDER} {msg_1.gender}
-            {FORM_AGE} {msg_1.age}
-            {FORM_CITY} {msg_1.city}
-            {FORM_EXEPIRENCE} {msg_1.experience}
-            {FORM_PURPOSE} {msg_1.target}
-            {FORM_PHONE} {msg_1.phone}
-            {FORM_TIME} {msg_1.time_talk}
-            {TELEGRAM_NAME} {f'@',msg_1.nickname}
-            {ID_USER} {update.effective_user.id}"""
+            result=data_clients(OLD_FORM,msg_1,user_id = update.effective_user.id)
 
             await update.message.reply_text(CLIENT_DATA,f'\n{result}\n')
             msg_1.posted = 1
         else:
-            result = f"""{NEW_FORM}\n {FORM_NAME} {msg_1.name}
-            {FORM_GENDER} {msg_1.gender}
-            {FORM_AGE}: {msg_1.age}
-            {FORM_CITY} {msg_1.city}
-            {FORM_EXEPIRENCE} {msg_1.experience}
-            {FORM_PURPOSE} {msg_1.target}
-            {FORM_PHONE} {msg_1.phone}
-            {FORM_TIME} {msg_1.time_talk}
-            {TELEGRAM_NAME} {f'@',msg_1.nickname}
-            {ID_USER} {update.effective_user.id}"""
-
+            result=data_clients(NEW_FORM,msg_1,user_id = update.effective_user.id)
+            
             await update.message.reply_text(CLIENT_DATA,f'\n{result}\n')
             
 
